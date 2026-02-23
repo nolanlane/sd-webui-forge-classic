@@ -39,6 +39,9 @@ else
     echo "uv package manager is already installed."
 fi
 
+# Set uv to install python versions into the persistent workspace
+export UV_PYTHON_INSTALL_DIR="$WORKSPACE/uv_python"
+
 # 3. Clone Repository
 if [ ! -d "$REPO_DIR" ]; then
     echo "Cloning Forge Classic (Neo branch) into $WORKSPACE..."
@@ -56,11 +59,11 @@ if ! uv python list | grep -q '3.13'; then
 fi
 
 cd "$REPO_DIR"
-if [ ! -d ".venv" ]; then
-    echo "Creating persistent virtual environment..."
-    uv venv .venv --python 3.13 --seed
+if [ ! -d ".venv" ] || [ ! -e ".venv/bin/python" ]; then
+    echo "Creating or repairing persistent virtual environment..."
+    uv venv .venv --allow-existing --python 3.13 --seed
 else
-    echo "Virtual environment already exists in workspace."
+    echo "Virtual environment already exists and is intact in workspace."
 fi
 
 # 5. Download Flux.1 Dev Model & Dependencies
