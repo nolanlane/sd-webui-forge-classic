@@ -74,7 +74,7 @@ cd "$REPO_DIR"
 
 # Ensure uv is used by webui.sh
 # You can set environment variables for launch parameters here
-export COMMANDLINE_ARGS="--listen --port 7860 --xformers"
+export COMMANDLINE_ARGS="--listen --port 7860 --xformers --uv-symlink"
 export PYTHON="uv run --python 3.13 python3"
 
 # Launch forge
