@@ -102,7 +102,7 @@ cd "$REPO_DIR"
 
 # You can set environment variables for launch parameters here
 export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
-export COMMANDLINE_ARGS="--listen --port 7860 --xformers --uv-symlink"
+export COMMANDLINE_ARGS="--listen --port 7860 --xformers"
 export PYTHON="$REPO_DIR/.venv/bin/python"
 
 # Launch forge
