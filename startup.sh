@@ -81,7 +81,12 @@ if [ ! -f "$REPO_DIR/models/VAE/ae.safetensors" ]; then
     curl -L "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors" -o "$REPO_DIR/models/VAE/ae.safetensors"
 fi
 
-# 6. Launch WebUI
+# 6. Check for existing WebUI instances and close them
+echo "Checking for existing WebUI processes..."
+pkill -f "launch.py" || true
+sleep 2
+
+# 7. Launch WebUI
 echo "=========================================="
 echo "Starting SD WebUI Forge Classic..."
 echo "=========================================="
