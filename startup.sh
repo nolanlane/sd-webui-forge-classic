@@ -51,17 +51,27 @@ else
     # Optionally update the repo: cd $REPO_DIR && git pull origin $BRANCH
 fi
 
-# 4. Setup Python 3.13 & Virtual Environment
-echo "Checking Python 3.13 installation..."
-if ! uv python list | grep -q '3.13'; then
-    echo "Installing Python 3.13 via uv..."
-    uv python install 3.13
+# 4. Setup Python 3.10 & Virtual Environment
+echo "Checking Python 3.10 installation..."
+if ! uv python list | grep -q '3.10'; then
+    echo "Installing Python 3.10 via uv..."
+    uv python install 3.10
 fi
 
 cd "$REPO_DIR"
+
+# If a venv exists but it's not 3.10, we should recreate it to avoid mixing package architectures.
+if [ -e ".venv/bin/python" ]; then
+    VENV_PY_VER=$(.venv/bin/python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")' 2>/dev/null || echo "0")
+    if [ "$VENV_PY_VER" != "3.10" ]; then
+        echo "Found incompatible Python version $VENV_PY_VER in .venv. Clearing it for 3.10..."
+        rm -rf .venv
+    fi
+fi
+
 if [ ! -d ".venv" ] || [ ! -e ".venv/bin/python" ]; then
     echo "Creating or repairing persistent virtual environment..."
-    uv venv .venv --allow-existing --python 3.13 --seed
+    uv venv .venv --allow-existing --python 3.10 --seed
 else
     echo "Virtual environment already exists and is intact in workspace."
 fi
