@@ -56,13 +56,29 @@ else
     # Optionally update the repo: cd $REPO_DIR && git pull origin $BRANCH
 fi
 
-# 5. Download Flux.1 Dev Model
+# 5. Download Flux.1 Dev Model & Dependencies
 mkdir -p "$MODEL_DIR"
 if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
     echo "Downloading Flux.1 Dev model..."
     curl -L "$MODEL_URL" -o "$MODEL_DIR/$MODEL_FILE"
 else
     echo "Flux.1 Dev model already exists. Skipping download."
+fi
+
+mkdir -p "$REPO_DIR/models/text_encoder"
+if [ ! -f "$REPO_DIR/models/text_encoder/clip_l.safetensors" ]; then
+    echo "Downloading clip_l.safetensors..."
+    curl -L "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors" -o "$REPO_DIR/models/text_encoder/clip_l.safetensors"
+fi
+if [ ! -f "$REPO_DIR/models/text_encoder/t5xxl_fp8_e4m3fn.safetensors" ]; then
+    echo "Downloading t5xxl_fp8_e4m3fn.safetensors..."
+    curl -L "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors" -o "$REPO_DIR/models/text_encoder/t5xxl_fp8_e4m3fn.safetensors"
+fi
+
+mkdir -p "$REPO_DIR/models/VAE"
+if [ ! -f "$REPO_DIR/models/VAE/ae.safetensors" ]; then
+    echo "Downloading Flux VAE..."
+    curl -L "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors" -o "$REPO_DIR/models/VAE/ae.safetensors"
 fi
 
 # 6. Launch WebUI
