@@ -101,7 +101,7 @@ echo "=========================================="
 cd "$REPO_DIR"
 
 # You can set environment variables for launch parameters here
-export DISABLE_ADDMM_CUDA_LT=1
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
 export COMMANDLINE_ARGS="--listen --port 7860 --xformers --uv-symlink"
 export PYTHON="$REPO_DIR/venv/bin/python3"
 
