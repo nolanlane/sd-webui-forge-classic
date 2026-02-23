@@ -78,4 +78,4 @@ export COMMANDLINE_ARGS="--listen --port 7860 --xformers --uv-symlink"
 export PYTHON="uv run --python 3.13 python3"
 
 # Launch forge
-bash webui.sh
+$PYTHON launch.py
