@@ -39,21 +39,28 @@ else
     echo "uv package manager is already installed."
 fi
 
-# 3. Python 3.13 via uv
-if ! uv python list | grep -q '3.13'; then
-    echo "Installing Python 3.13 via uv..."
-    uv python install 3.13
-else
-    echo "Python 3.13 is already available via uv."
-fi
-
-# 4. Clone Repository
+# 3. Clone Repository
 if [ ! -d "$REPO_DIR" ]; then
     echo "Cloning Forge Classic (Neo branch) into $WORKSPACE..."
     git clone --branch $BRANCH $REPO_URL $REPO_DIR
 else
     echo "Repository already exists at $REPO_DIR. Checking for updates..."
     # Optionally update the repo: cd $REPO_DIR && git pull origin $BRANCH
+fi
+
+# 4. Setup Python 3.13 & Virtual Environment
+echo "Checking Python 3.13 installation..."
+if ! uv python list | grep -q '3.13'; then
+    echo "Installing Python 3.13 via uv..."
+    uv python install 3.13
+fi
+
+cd "$REPO_DIR"
+if [ ! -d "venv" ]; then
+    echo "Creating persistent virtual environment..."
+    uv venv venv --python 3.13 --seed
+else
+    echo "Virtual environment already exists in workspace."
 fi
 
 # 5. Download Flux.1 Dev Model & Dependencies
@@ -93,11 +100,10 @@ echo "=========================================="
 
 cd "$REPO_DIR"
 
-# Ensure uv is used by webui.sh
 # You can set environment variables for launch parameters here
 export DISABLE_ADDMM_CUDA_LT=1
 export COMMANDLINE_ARGS="--listen --port 7860 --xformers --uv-symlink"
-export PYTHON="uv run --python 3.13 python3"
+export PYTHON="$REPO_DIR/venv/bin/python3"
 
 # Launch forge
 $PYTHON launch.py
