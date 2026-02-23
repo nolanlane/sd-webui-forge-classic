@@ -74,6 +74,7 @@ cd "$REPO_DIR"
 
 # Ensure uv is used by webui.sh
 # You can set environment variables for launch parameters here
+export DISABLE_ADDMM_CUDA_LT=1
 export COMMANDLINE_ARGS="--listen --port 7860 --xformers --uv-symlink"
 export PYTHON="uv run --python 3.13 python3"
 
