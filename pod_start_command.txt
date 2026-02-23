@@ -1,4 +1,4 @@
 # RunPod / Vast.ai Pod Start Command
 # Paste this into your Docker Command or On-Start execution field:
 
-git clone -b neo https://github.com/nolanlane/sd-webui-forge-classic.git /workspace/sd-webui-forge-classic && cd /workspace/sd-webui-forge-classic && chmod +x startup.sh && ./startup.sh
+apt-get update && apt-get install -y git && git clone -b main https://github.com/nolanlane/sd-webui-forge-classic.git /workspace/sd-webui-forge-classic && cd /workspace/sd-webui-forge-classic && chmod +x startup.sh && ./startup.sh
