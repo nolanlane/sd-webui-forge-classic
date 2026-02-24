@@ -52,6 +52,11 @@ fi
 cd "$REPO_DIR"
 
 # 4b. Create venv in repo (do not delete if it already exists)
+if [ "${DELETE_VENV}" = "true" ]; then
+    echo "DELETE_VENV=true; removing existing .venv..."
+    rm -rf .venv
+fi
+
 if [ ! -d ".venv" ] || [ ! -x ".venv/bin/python" ]; then
     echo "Creating Python 3.13 virtual environment in $REPO_DIR/.venv..."
     if ! uv python list | grep -q '3.13'; then
