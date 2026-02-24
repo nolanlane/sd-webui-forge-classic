@@ -51,6 +51,18 @@ fi
 # 4. Ensure repo is current
 cd "$REPO_DIR"
 
+# 4b. Create venv in repo (do not delete if it already exists)
+if [ ! -d ".venv" ]; then
+    echo "Creating Python 3.13 virtual environment in $REPO_DIR/.venv..."
+    if ! uv python list | grep -q '3.13'; then
+        echo "Installing Python 3.13 via uv..."
+        uv python install 3.13
+    fi
+    uv venv .venv --python 3.13 --seed
+else
+    echo "✅ .venv already exists; leaving it in place."
+fi
+
 # 5. Download Flux.1 Dev Model & Dependencies
 download_file() {
     local url="$1"
