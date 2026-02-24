@@ -48,7 +48,20 @@ else
     # Optionally update the repo: cd $REPO_DIR && git pull origin $BRANCH
 fi
 
+# 4. Setup Python 3.13 & Virtual Environment
+echo "Checking Python 3.13 installation..."
+if ! uv python list | grep -q '3.13'; then
+    echo "Installing Python 3.13 via uv..."
+    uv python install 3.13
+fi
 
+cd "$REPO_DIR"
+if [ ! -d ".venv" ]; then
+    echo "Creating persistent virtual environment..."
+    uv venv .venv --python 3.13 --seed
+else
+    echo "Virtual environment already exists in workspace."
+fi
 
 # 5. Download Flux.1 Dev Model & Dependencies
 mkdir -p "$MODEL_DIR"
@@ -90,7 +103,7 @@ cd "$REPO_DIR"
 # You can set environment variables for launch parameters here
 export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
 export COMMANDLINE_ARGS="--listen --port 7860 --xformers"
-export PYTHON="python3"
+export PYTHON="$REPO_DIR/.venv/bin/python"
 
 # Launch forge
 $PYTHON launch.py
