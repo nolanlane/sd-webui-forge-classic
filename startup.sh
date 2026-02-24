@@ -6,7 +6,7 @@ set -e
 WORKSPACE="/workspace"
 REPO_DIR="$WORKSPACE/sd-webui-forge-classic"
 REPO_URL="https://github.com/nolanlane/sd-webui-forge-classic.git"
-BRANCH="neo"
+BRANCH="main"
 MODEL_DIR="$REPO_DIR/models/Stable-diffusion"
 MODEL_URL="https://huggingface.co/lllyasviel/flux1_dev/resolve/main/flux1-dev-fp8.safetensors"
 MODEL_FILE="flux1-dev-fp8.safetensors"
@@ -112,7 +112,7 @@ cd "$REPO_DIR"
 
 # You can set environment variables for launch parameters here
 export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
-export COMMANDLINE_ARGS="--listen --port 7860 --xformers"
+export COMMANDLINE_ARGS="--listen --port 7860 --xformers --cuda-malloc"
 export PYTHON="$REPO_DIR/.venv/bin/python"
 
 # Launch forge
