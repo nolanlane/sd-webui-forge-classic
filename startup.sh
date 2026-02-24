@@ -143,7 +143,8 @@ cd "$REPO_DIR"
 # You can set environment variables for launch parameters here
 # NOTE: Disable cuda-malloc and custom allocator flags to avoid CUDA init issues
 # export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
-export COMMANDLINE_ARGS="--listen --port 7860 --xformers --uv-symlink"
+export CUDA_VISIBLE_DEVICES=0
+export COMMANDLINE_ARGS="--listen --port 7860 --uv-symlink"
 export PYTHON="$REPO_DIR/.venv/bin/python"
 
 # Launch forge
