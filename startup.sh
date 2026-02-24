@@ -56,11 +56,21 @@ if ! uv python list | grep -q '3.13'; then
 fi
 
 cd "$REPO_DIR"
+
+# Nuke the venv if it exists but has the wrong Python version (e.g., 3.10)
+if [ -d ".venv" ]; then
+    VENV_PYTHON_VERSION=$(.venv/bin/python --version 2>&1 || echo "None")
+    if [[ "$VENV_PYTHON_VERSION" != *"3.13"* ]]; then
+        echo "🚨 Found existing .venv with INCORRECT Python version ($VENV_PYTHON_VERSION). Deleting to recreate with 3.13..."
+        rm -rf .venv
+    fi
+fi
+
 if [ ! -d ".venv" ]; then
-    echo "Creating persistent virtual environment..."
+    echo "Creating persistent virtual environment with Python 3.13..."
     uv venv .venv --python 3.13 --seed
 else
-    echo "Virtual environment already exists in workspace."
+    echo "✅ Valid virtual environment with Python 3.13 already exists."
 fi
 
 # 5. Download Flux.1 Dev Model & Dependencies
