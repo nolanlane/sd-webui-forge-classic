@@ -78,14 +78,20 @@ download_file() {
     local url="$1"
     local dest="$2"
     local tmp="${dest}.part"
+    local auth_args=()
+
+    if [ -n "$HF_TOKEN" ]; then
+        auth_args=(-H "Authorization: Bearer $HF_TOKEN")
+    fi
 
     echo "Downloading: $url"
     echo " -> $dest"
 
     rm -f "$tmp"
     if ! curl -L --fail --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 0 \
-        --progress-bar -o "$tmp" "$url"; then
+        --progress-bar "${auth_args[@]}" -o "$tmp" "$url"; then
         echo "❌ Download failed: $url"
+        echo "   If this is a gated Hugging Face repo, set HF_TOKEN with an access token."
         rm -f "$tmp"
         return 1
     fi
@@ -123,7 +129,7 @@ fi
 mkdir -p "$REPO_DIR/models/VAE"
 if [ ! -f "$REPO_DIR/models/VAE/ae.safetensors" ]; then
     echo "Downloading Flux VAE..."
-    download_file "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors" "$REPO_DIR/models/VAE/ae.safetensors" || exit 1
+    download_file "https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors" "$REPO_DIR/models/VAE/ae.safetensors" || exit 1
 fi
 
 # 6. Check for existing WebUI instances and close them
