@@ -74,10 +74,38 @@ else
 fi
 
 # 5. Download Flux.1 Dev Model & Dependencies
+download_file() {
+    local url="$1"
+    local dest="$2"
+    local tmp="${dest}.part"
+
+    echo "Downloading: $url"
+    echo " -> $dest"
+
+    rm -f "$tmp"
+    if ! curl -L --fail --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 0 \
+        --progress-bar -o "$tmp" "$url"; then
+        echo "❌ Download failed: $url"
+        rm -f "$tmp"
+        return 1
+    fi
+
+    local size
+    size=$(stat -c%s "$tmp" 2>/dev/null || echo 0)
+    if [ "$size" -le 0 ]; then
+        echo "❌ Download produced empty file: $dest"
+        rm -f "$tmp"
+        return 1
+    fi
+
+    mv -f "$tmp" "$dest"
+    echo "✅ Download complete: $dest ($size bytes)"
+}
+
 mkdir -p "$MODEL_DIR"
 if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
     echo "Downloading Flux.1 Dev model..."
-    curl -L "$MODEL_URL" -o "$MODEL_DIR/$MODEL_FILE"
+    download_file "$MODEL_URL" "$MODEL_DIR/$MODEL_FILE" || exit 1
 else
     echo "Flux.1 Dev model already exists. Skipping download."
 fi
@@ -85,17 +113,17 @@ fi
 mkdir -p "$REPO_DIR/models/text_encoder"
 if [ ! -f "$REPO_DIR/models/text_encoder/clip_l.safetensors" ]; then
     echo "Downloading clip_l.safetensors..."
-    curl -L "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors" -o "$REPO_DIR/models/text_encoder/clip_l.safetensors"
+    download_file "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors" "$REPO_DIR/models/text_encoder/clip_l.safetensors" || exit 1
 fi
 if [ ! -f "$REPO_DIR/models/text_encoder/t5xxl_fp8_e4m3fn.safetensors" ]; then
     echo "Downloading t5xxl_fp8_e4m3fn.safetensors..."
-    curl -L "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors" -o "$REPO_DIR/models/text_encoder/t5xxl_fp8_e4m3fn.safetensors"
+    download_file "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors" "$REPO_DIR/models/text_encoder/t5xxl_fp8_e4m3fn.safetensors" || exit 1
 fi
 
 mkdir -p "$REPO_DIR/models/VAE"
 if [ ! -f "$REPO_DIR/models/VAE/ae.safetensors" ]; then
     echo "Downloading Flux VAE..."
-    curl -L "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors" -o "$REPO_DIR/models/VAE/ae.safetensors"
+    download_file "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors" "$REPO_DIR/models/VAE/ae.safetensors" || exit 1
 fi
 
 # 6. Check for existing WebUI instances and close them
@@ -111,8 +139,9 @@ echo "=========================================="
 cd "$REPO_DIR"
 
 # You can set environment variables for launch parameters here
-export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
-export COMMANDLINE_ARGS="--listen --port 7860 --xformers --cuda-malloc"
+# NOTE: Disable cuda-malloc and custom allocator flags to avoid CUDA init issues
+# export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
+export COMMANDLINE_ARGS="--listen --port 7860 --xformers"
 export PYTHON="$REPO_DIR/.venv/bin/python"
 
 # Launch forge
