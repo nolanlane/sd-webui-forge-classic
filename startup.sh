@@ -52,12 +52,13 @@ fi
 cd "$REPO_DIR"
 
 # 4b. Create venv in repo (do not delete if it already exists)
-if [ ! -d ".venv" ]; then
+if [ ! -d ".venv" ] || [ ! -x ".venv/bin/python" ]; then
     echo "Creating Python 3.13 virtual environment in $REPO_DIR/.venv..."
     if ! uv python list | grep -q '3.13'; then
         echo "Installing Python 3.13 via uv..."
         uv python install 3.13
     fi
+    rm -rf .venv
     uv venv .venv --python 3.13 --seed
 else
     echo "✅ .venv already exists; leaving it in place."
