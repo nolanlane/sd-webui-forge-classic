@@ -48,30 +48,8 @@ else
     # Optionally update the repo: cd $REPO_DIR && git pull origin $BRANCH
 fi
 
-# 4. Setup Python 3.13 & Virtual Environment
-echo "Checking Python 3.13 installation..."
-if ! uv python list | grep -q '3.13'; then
-    echo "Installing Python 3.13 via uv..."
-    uv python install 3.13
-fi
-
+# 4. Ensure repo is current
 cd "$REPO_DIR"
-
-# Nuke the venv if it exists but has the wrong Python version (e.g., 3.10)
-if [ -d ".venv" ]; then
-    VENV_PYTHON_VERSION=$(.venv/bin/python --version 2>&1 || echo "None")
-    if [[ "$VENV_PYTHON_VERSION" != *"3.13"* ]]; then
-        echo "🚨 Found existing .venv with INCORRECT Python version ($VENV_PYTHON_VERSION). Deleting to recreate with 3.13..."
-        rm -rf .venv
-    fi
-fi
-
-if [ ! -d ".venv" ]; then
-    echo "Creating persistent virtual environment with Python 3.13..."
-    uv venv .venv --python 3.13 --seed
-else
-    echo "✅ Valid virtual environment with Python 3.13 already exists."
-fi
 
 # 5. Download Flux.1 Dev Model & Dependencies
 download_file() {
